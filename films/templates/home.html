@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Управление фильмами</title>
+</head>
+<body>
+    <h1>Управление фильмами</h1>
+    <a href="{% url 'add_film' %}">Добавить фильм</a> |
+    <a href="{% url 'film_list' %}">Список фильмов</a> |
+    <a href="{% url 'upload' %}">Загрузить файл</a> |
+    <a href="{% url 'files' %}">Просмотр файлов</a>
+</body>
+</html>

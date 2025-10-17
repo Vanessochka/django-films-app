@@ -1,0 +1,9 @@
+<h1>Загруженные файлы</h1>
+{% for file in files %}
+    <h3>Файл: {{ file.name }}</h3>
+    <pre>{{ file.content }}</pre>
+    <hr>
+{% empty %}
+    <p>Файлов нет</p>
+{% endfor %}
+<a href="{% url 'home' %}">На главную</a>

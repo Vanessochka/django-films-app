@@ -1,0 +1,7 @@
+<h1>Список фильмов</h1>
+{% for film in films %}
+    <p><strong>{{ film.title }}</strong> ({{ film.year }}) - Режиссер: {{ film.director }} - Жанр: {{ film.genre }}</p>
+{% empty %}
+    <p>Фильмов нет</p>
+{% endfor %}
+<a href="{% url 'home' %}">На главную</a>
