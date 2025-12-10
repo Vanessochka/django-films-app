@@ -1,7 +1,70 @@
-<h1>Добавить новый фильм</h1>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Сохранить фильм</button>
-</form>
-<a href="{% url 'home' %}">На главную</a>
+{% extends 'base.html' %}
+
+{% block title %}Добавить фильм{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Добавить новый фильм</h4>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {% for field in form %}
+                    <div class="mb-3">
+                        <label for="{{ field.id_for_label }}" class="form-label">
+                            {{ field.label }}
+                        </label>
+                        
+                        {% if field.name == 'storage_type' %}
+                        <!-- Радиокнопки для выбора хранилища -->
+                        <div class="mt-2">
+                            {% for choice in field %}
+                            <div class="form-check form-check-inline">
+                                {{ choice.tag }}
+                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <small class="form-text text-muted">
+                            <i class="bi bi-info-circle"></i>
+                            <strong>В файл</strong> - сохранится в папку media/uploads<br>
+                            <strong>В базу данных</strong> - сохранится в SQLite с проверкой дубликатов
+                        </small>
+                        {% else %}
+                        <input type="{{ field.field.widget.input_type }}" 
+                               name="{{ field.name }}"
+                               id="{{ field.id_for_label }}"
+                               class="form-control"
+                               value="{{ field.value|default:'' }}">
+                        {% endif %}
+                        
+                        {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in field.errors %}
+                            {{ error }}
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'home' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить фильм
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

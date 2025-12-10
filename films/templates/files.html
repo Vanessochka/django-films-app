@@ -1,9 +1,47 @@
-<h1>Загруженные файлы</h1>
-{% for file in files %}
-    <h3>Файл: {{ file.name }}</h3>
-    <pre>{{ file.content }}</pre>
-    <hr>
-{% empty %}
-    <p>Файлов нет</p>
-{% endfor %}
-<a href="{% url 'home' %}">На главную</a>
+{% extends 'base.html' %}
+
+{% block title %}Файлы{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-info text-white">
+                <h4 class="mb-0"><i class="bi bi-folder"></i> Загруженные файлы</h4>
+            </div>
+            <div class="card-body">
+                {% if files %}
+                <div class="row">
+                    {% for file in files %}
+                    <div class="col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">
+                                    <i class="bi bi-file-earmark-text"></i> {{ file.name }}
+                                    <span class="badge bg-secondary float-end">
+                                        {% if file.name|lower|slice:"-5:" == ".json" %}JSON{% endif %}
+                                    </span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <pre class="bg-light p-3" style="max-height: 300px; overflow-y: auto;"><code>{{ file.content }}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-folder display-1 text-muted"></i>
+                    <h4 class="mt-3">Файлов нет</h4>
+                    <p class="text-muted">Загрузите первый JSON файл с фильмами</p>
+                    <a href="{% url 'upload' %}" class="btn btn-info">
+                        <i class="bi bi-upload"></i> Загрузить файл
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,8 +1,88 @@
-<h1>Загрузить файл с фильмами</h1>
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Загрузить файл</button>
-</form>
-{% if error %}<p style="color: red;">{{ error }}</p>{% endif %}
-<a href="{% url 'home' %}">На главную</a>
+{% extends 'base.html' %}
+
+{% block title %}Загрузить файл{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="bi bi-upload"></i> Загрузить файл с фильмами</h4>
+            </div>
+            <div class="card-body">
+                {% if error %}
+                <div class="alert alert-danger">
+                    <i class="bi bi-exclamation-triangle"></i> {{ error }}
+                </div>
+                {% endif %}
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <div class="mb-4">
+                        <label for="{{ form.file.id_for_label }}" class="form-label fw-bold">
+                            <i class="bi bi-file-earmark"></i> {{ form.file.label }}
+                        </label>
+                        <input type="file" name="file" class="form-control" required>
+                        <div class="form-text">
+                            <i class="bi bi-info-circle"></i> Поддерживаемый формат: JSON
+                        </div>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <label class="form-label fw-bold">
+                            <i class="bi bi-save"></i> Куда сохранить загруженные данные:
+                        </label>
+                        <div class="mt-2">
+                            {% for choice in form.storage_type %}
+                            <div class="form-check">
+                                {{ choice.tag }}
+                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                    {{ choice.choice_label }}
+                                </label>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        <div class="form-text mt-2">
+                            <i class="bi bi-lightbulb"></i>
+                            <strong>Оставить в файле</strong> - файл сохранится в папку media/uploads<br>
+                            <strong>Импортировать в базу данных</strong> - данные перенесутся в БД, файл удалится
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'home' %}" class="btn btn-secondary me-md-2">
+                            <i class="bi bi-arrow-left"></i> Отмена
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-cloud-upload"></i> Загрузить файл
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        
+        <div class="card mt-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-question-circle"></i> Пример JSON файла
+            </div>
+            <div class="card-body">
+                <pre class="bg-light p-3"><code>[
+    {
+        "title": "Властелин колец",
+        "director": "Питер Джексон",
+        "year": 2001,
+        "genre": "Фэнтези"
+    },
+    {
+        "title": "Крестный отец",
+        "director": "Фрэнсис Форд Коппола",
+        "year": 1972,
+        "genre": "Криминал"
+    }
+]</code></pre>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

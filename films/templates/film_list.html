@@ -1,7 +1,146 @@
-<h1>Список фильмов</h1>
-{% for film in films %}
-    <p><strong>{{ film.title }}</strong> ({{ film.year }}) - Режиссер: {{ film.director }} - Жанр: {{ film.genre }}</p>
-{% empty %}
-    <p>Фильмов нет</p>
-{% endfor %}
-<a href="{% url 'home' %}">На главную</a>
+{% extends 'base.html' %}
+
+{% block title %}Список фильмов{% endblock %}
+
+{% block extra_js %}
+<script>
+    function searchFilms() {
+        const query = document.getElementById('searchInput').value;
+        const resultsDiv = document.getElementById('searchResults');
+        
+        if (query.length >= 2) {
+            fetch(`/search/?q=${encodeURIComponent(query)}`)
+                .then(response => response.json())
+                .then(data => {
+                    let html = '<h5 class="mt-3">Результаты поиска:</h5>';
+                    if (data.films.length > 0) {
+                        data.films.forEach(film => {
+                            html += `
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5>${film.title} (${film.year})</h5>
+                                        <p><strong>Режиссер:</strong> ${film.director}</p>
+                                        <p><strong>Жанр:</strong> ${film.genre}</p>
+                                        <div>
+                                            <a href="/edit/${film.id}/" class="btn btn-sm btn-success">
+                                                <i class="bi bi-pencil"></i> Редактировать
+                                            </a>
+                                            <a href="/delete/${film.id}/" class="btn btn-sm btn-danger">
+                                                <i class="bi bi-trash"></i> Удалить
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                    } else {
+                        html += '<p class="text-muted">Фильмы не найдены</p>';
+                    }
+                    resultsDiv.innerHTML = html;
+                });
+        } else {
+            resultsDiv.innerHTML = '';
+        }
+    }
+    
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('searchInput').addEventListener('input', searchFilms);
+    });
+</script>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <!-- Переключатель источника данных -->
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <i class="bi bi-database"></i> Источник данных
+            </div>
+            <div class="card-body">
+                <div class="btn-group" role="group">
+                    <a href="?source=db" class="btn {% if source == 'db' %}btn-primary{% else %}btn-outline-primary{% endif %}">
+                        <i class="bi bi-database"></i> База данных
+                    </a>
+                    <a href="?source=files" class="btn {% if source == 'files' %}btn-primary{% else %}btn-outline-secondary{% endif %}">
+                        <i class="bi bi-file-earmark-text"></i> Файлы JSON
+                    </a>
+                </div>
+                <p class="mt-2 mb-0">
+                    <small class="text-muted">
+                        Сейчас показываются данные из: <strong>{{ source_name }}</strong>
+                    </small>
+                </p>
+            </div>
+        </div>
+
+        <!-- AJAX поиск (только для БД) -->
+        {% if source == 'db' %}
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <i class="bi bi-search"></i> Поиск фильмов
+            </div>
+            <div class="card-body">
+                <div class="input-group">
+                    <input type="text" 
+                           id="searchInput" 
+                           class="form-control" 
+                           placeholder="Поиск по названию, режиссеру, жанру...">
+                    <button class="btn btn-outline-secondary" type="button" onclick="searchFilms()">
+                        <i class="bi bi-search"></i> Найти
+                    </button>
+                </div>
+                <div id="searchResults" class="mt-3"></div>
+            </div>
+        </div>
+        {% endif %}
+
+        <!-- Список фильмов -->
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <i class="bi bi-film"></i> Список фильмов 
+                <span class="badge bg-light text-dark ms-2">{{ films|length }}</span>
+            </div>
+            <div class="card-body">
+                {% if films %}
+                <div class="row">
+                    {% for film in films %}
+                    <div class="col-md-6 mb-3">
+                        <div class="card film-card h-100">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ film.title }} <small class="text-muted">({{ film.year }})</small></h5>
+                                <p class="card-text">
+                                    <strong><i class="bi bi-person"></i> Режиссер:</strong> {{ film.director }}<br>
+                                    <strong><i class="bi bi-tags"></i> Жанр:</strong> {{ film.genre }}
+                                </p>
+                                
+                                {% if source == 'db' and film.id %}
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'edit_film' film.id %}" class="btn btn-outline-success">
+                                        <i class="bi bi-pencil"></i> Редактировать
+                                    </a>
+                                    <a href="{% url 'delete_film' film.id %}" class="btn btn-outline-danger">
+                                        <i class="bi bi-trash"></i> Удалить
+                                    </a>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-5">
+                    <i class="bi bi-film display-1 text-muted"></i>
+                    <h4 class="mt-3">Фильмов нет</h4>
+                    <p class="text-muted">Добавьте первый фильм или загрузите файл</p>
+                    <a href="{% url 'add_film' %}" class="btn btn-primary">
+                        <i class="bi bi-plus-circle"></i> Добавить фильм
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

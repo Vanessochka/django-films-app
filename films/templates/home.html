@@ -1,13 +1,64 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Управление фильмами</title>
-</head>
-<body>
-    <h1>Управление фильмами</h1>
-    <a href="{% url 'add_film' %}">Добавить фильм</a> |
-    <a href="{% url 'film_list' %}">Список фильмов</a> |
-    <a href="{% url 'upload' %}">Загрузить файл</a> |
-    <a href="{% url 'files' %}">Просмотр файлов</a>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8 text-center">
+        <div class="jumbotron bg-light p-5 rounded">
+            <h1 class="display-4 mb-4">🎬 Добро пожаловать в Фильмотеку!</h1>
+            <p class="lead">Управляйте вашей коллекцией фильмов с современным интерфейсом</p>
+            <hr class="my-4">
+            
+            <div class="row mt-5">
+                <div class="col-md-4 mb-4">
+                    <div class="card film-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-plus-circle display-4 text-primary mb-3"></i>
+                            <h5 class="card-title">Добавить фильм</h5>
+                            <p class="card-text">Добавьте новый фильм в коллекцию</p>
+                            <a href="{% url 'add_film' %}" class="btn btn-primary">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card film-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-upload display-4 text-success mb-3"></i>
+                            <h5 class="card-title">Загрузить файл</h5>
+                            <p class="card-text">Импортируйте фильмы из JSON файла</p>
+                            <a href="{% url 'upload' %}" class="btn btn-success">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4 mb-4">
+                    <div class="card film-card h-100">
+                        <div class="card-body text-center">
+                            <i class="bi bi-folder display-4 text-info mb-3"></i>
+                            <h5 class="card-title">Просмотр файлов</h5>
+                            <p class="card-text">Просмотрите все загруженные файлы</p>
+                            <a href="{% url 'files' %}" class="btn btn-info">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <div class="alert alert-warning">
+                    <h5><i class="bi bi-lightbulb"></i> Быстрый доступ к данным:</h5>
+                    <div class="btn-group mt-2" role="group">
+                        <a href="{% url 'film_list' %}?source=db" class="btn btn-outline-primary">
+                            <i class="bi bi-database"></i> Показать из базы данных
+                        </a>
+                        <a href="{% url 'film_list' %}?source=files" class="btn btn-outline-secondary">
+                            <i class="bi bi-file-earmark-text"></i> Показать из файлов
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
